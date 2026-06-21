@@ -1,10 +1,19 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
+import Home from './pages/home.jsx' 
+import Play from './pages/playgame.jsx'
 
 function App() {
   return (
     <>
-    <h1>hi</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/play" element={<Play />} />
+      </Routes>
+    </BrowserRouter>
+
     </>
   )
 }
