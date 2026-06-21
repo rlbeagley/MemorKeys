@@ -21,6 +21,48 @@ body {
 }
 
 
-.button-txt {
+.btn {
+  font-family:"Madimi One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #371685;
+  background-color: #CAC5E5;
+  border: 0;
+}
 
+.btn:hover {
+  background-color: #8D81CA;
+  color: white;
+}
+
+.btn:active {
+  background-color: #8D81CA;
+  color: white;
+}
+
+.btn-check:checked + .btn {
+  background-color: #6f42c1;
+  border-color: #6f42c1;
+  color: #fff;
+}
+
+.form-label {
+  font-family: "Madimi One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #F7FFEA;
+}
+
+.form-check.form-switch {
+  font-family: "Madimi One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #F7FFEA;
+}
+
+.column-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
