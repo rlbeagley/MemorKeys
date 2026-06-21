@@ -1,32 +1,47 @@
 import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react'
-import { FaPlay, FaEye } from "react-icons/fa";
+import { FaPlay, FaEye, FaHome, FaRedo } from "react-icons/fa";
 import { TbHandClick } from "react-icons/tb";
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import { useNavigate } from "react-router-dom";
-import WhiteKeySvg from '../assets/imgs/white-key.svg?react';
-import BlackKeySvg from '../assets/imgs/black-key.svg?react';
 import PianoKey from '../components/PianoKey';
 
-//TODO: replace SVGs with div blocks
-// TODO: implement fail page
-// TODO: add notes
-//TODO: fix weird margin error
+import cNote from '../assets/audio/c.mp3';
+import aNote from '../assets/audio/a.mp3';
+import aSharpNote from '../assets/audio/aSharp.mp3';
+import bNote from '../assets/audio/b.mp3';
+import dNote from '../assets/audio/d.mp3';
+import dSharpNote from '../assets/audio/dSharp.mp3';
+import eNote from '../assets/audio/e.mp3';
+import fNote from '../assets/audio/f.mp3';
+import gNote from '../assets/audio/g.mp3';
+import gSharpNote from '../assets/audio/gSharp.mp3';
+
 // TODO: finish report
 
 function MessageHeader({gameStage}) {
     if (gameStage == 'awaitingStart') {
-      return (<h2 className="d-flex justify-content-center">
-        <FaPlay style={{ fontSize: "1.5rem" }} className="me-3 light-icon"/>
-        Click Anywhere To Start
-      </h2>);
+      return (
+        <div className="d-flex flex-column justify-content-center align-items-center">
+          <h2 className="d-flex justify-content-center">
+            <FaPlay style={{ fontSize: "1.5rem" }} className="me-3 light-icon"/>
+          Click Anywhere To Start
+          </h2>
+          <h4>Have fun!</h4>
+        </div>
+      );
     }
     else if (gameStage == 'demo') {
-      return (<h2 className="d-flex justify-content-center">
-        <FaEye style={{ fontSize: "1.5rem" }} className="me-3 light-icon"/>
-        Memorize the Sequence
-      </h2>);
+      return (
+      <div className="d-flex flex-column justify-content-center align-items-center">
+        <h2 className="d-flex justify-content-center">
+          <FaEye style={{ fontSize: "1.5rem" }} className="me-3 light-icon"/>
+          Memorize the Sequence
+        </h2>
+        <h4>Get ready to play it back.</h4>
+      </div>
+      );
 
     } else if (gameStage == 'play') {
       return (
@@ -52,9 +67,14 @@ export default function Play() {
   const [clickedKeys, setClickedKeys] = useState([]);
   const [desiredKeys, setDesiredKeys] = useState([]);
   const [activeNote, setActiveNote] = useState(null); // to help enable and disable notes during demo
-
+  const [highScore, setHighScore] = useState(() => {
+    const saved = localStorage.getItem("highScore");
+    return saved ? Number(saved) : 0;
+  });
+  
   const whiteKeys = ["C","D","E","F","G","A","B"];
   const whiteKeyWidth = 100 / whiteKeys.length;
+
 
   // "after" = index of the white key each black key sits between
   const blackKeys = [
@@ -64,6 +84,23 @@ export default function Play() {
     { note: "G#", after: 4 },
     { note: "A#", after: 5 },
   ];
+
+  // I couldn't find mp3's of each note... some wont have sounds...
+  const noteSounds = {
+  "A": aNote,
+  "A#": aSharpNote,
+  "B": bNote,
+  "C": cNote,
+  "D": dNote,
+  "D#": dSharpNote,
+  "E": eNote,
+  "F": fNote,
+  "G": gNote,
+  "G#": gSharpNote
+  };
+
+  const difficultyMultipliers = [10,1,0.2];
+
 
   const randomGenerateNote = () => {
     // 12 total numbers
@@ -81,31 +118,50 @@ export default function Play() {
   // handle demo stage
   useEffect(() => {
     if (gameStage !== 'demo') return;
-    console.log(gameStage);
     const newPattern = [...desiredKeys, randomGenerateNote()];
     setDesiredKeys(newPattern);
-    console.log(newPattern);
+    console.log("We are in the demo, this is the new desired pattern: " + newPattern.toString());
+
+    let difficultyMultiplier = 0;
+
+    if (level == "easy") {
+      difficultyMultiplier = difficultyMultipliers[0];
+    } else if (level=="normal") {
+      difficultyMultiplier = difficultyMultipliers[1];
+    } else {
+      difficultyMultiplier = difficultyMultipliers[2];
+    }
 
     const delay = (ms) => new Promise(res => setTimeout(res, ms));
 
     async function playDemo() {
       for (const note of newPattern) {
-        await delay(500);
+        await delay(600 * difficultyMultiplier);
         setActiveNote(note);
-        await delay(1000);
+        await delay(600 * difficultyMultiplier);
         setActiveNote(null);
-        await delay(500);
+        await delay(400 * difficultyMultiplier);
       }
+      await delay(1200);
       setGameStage('play'); // sequence finished, hand control to the user
     }
 
     playDemo(); // call playDemo
   }, [gameStage]);
 
+  useEffect(() => {
+    if (!activeNote) return; // dont play null
+    if (activeNote in noteSounds) {
+      const audio = new Audio(noteSounds[activeNote]);
+      audio.play();
+    }
+    
+  }, [activeNote]);
+
   // Compare user input to desired keys
   useEffect(() => {
-    console.log(clickedKeys);
     if (gameStage !== "play") return; // only run in play stage.
+    console.log("These are the user's keys: "+ clickedKeys.toString());
 
     // check if length of clickedKeys = length of desired key, check if arrays are equal in values.
     if (clickedKeys.length == desiredKeys.length) {
@@ -113,8 +169,10 @@ export default function Play() {
         setScore(score+1);
         setClickedKeys([]);
         setGameStage('demo');
+        return;
       } else {
         setGameStage('end');
+        return;
       }
     }
 
@@ -130,8 +188,15 @@ export default function Play() {
     // Compare clickedKeys with desiredKeys
   }, [clickedKeys]);
 
-
-
+  // highscore setter
+  useEffect(() => {
+    if (gameStage === "end") {
+      if (score > highScore) {
+        setHighScore(score);
+        localStorage.setItem("highScore", score);
+      }
+    }
+  }, [gameStage]);
 
   const handleNavToSettings = () => {
     navTo("/");
@@ -147,11 +212,6 @@ export default function Play() {
     if (gameStage !== 'play') return;
     setActiveNote(note);
     setClickedKeys(prev => [...prev, note]);
-    
-
-    // add logic to check if this is equal to the array of desired keys.
-    // if not, trigger end scene
-    // if it is, increase score, trigger add new desired key, which will trigger a demo scene. 
   }
 
   const handleReleaseKey = (note) => {
@@ -159,48 +219,80 @@ export default function Play() {
     setActiveNote(null);
   }
 
-  return (
-    <Container className="column-container my-3" onClick={handleStartGame}>
-        <MessageHeader gameStage={gameStage}/>
-        
-      
-      <Container fluid className="position-relative d-flex align-items-start">
-        {whiteKeys.map((note) => (
-          <PianoKey Svg={WhiteKeySvg} 
-          key={note} 
-          id={note} 
-          className="flex-fill m-1"
-          onPress={handlePressKey}
-          onRelease={handleReleaseKey}
-          isActive={activeNote === note}
-          />
-        ))}
+  const handleRestartGame = () => {
+    setScore(0);
+    setClickedKeys([]);
+    setDesiredKeys([]);
+    setActiveNote(null);
+    setGameStage('awaitingStart');
+  }
 
-        {blackKeys.map(({ note, after }) => (
-          <PianoKey Svg={BlackKeySvg}
-            key={note}
-            id={note}
-            className="position-absolute m-0"
-            style={{
-              left: `${(after + 1) * whiteKeyWidth}%`,
-              transform: "translateX(-50%)",
-              width: `${whiteKeyWidth * 0.55}%`,
-            }}
-            onPress={handlePressKey}
-            onRelease={handleReleaseKey}
-            isActive={activeNote === note}
-          />
-        ))}
-
-      </Container>
-
-      <Container className="d-flex justify-content-between align-items-center">
-        <Button onClick={handleNavToSettings} className="text-start px-4" size="lg">
-          Settings
+  if (gameStage == 'end') { 
+    return(
+    <Container className="d-flex vh-100 flex-column justify-content-center align-items-between">
+      <h1>Game Over</h1>
+      <div className="d-flex justify-content-between">
+        <h3>Score:</h3>
+        <h3>{score}</h3>
+      </div>
+      <div className="d-flex justify-content-between">
+        <h3>Highscore:</h3>
+        <h3>{highScore}</h3>
+      </div>
+      <div className="d-flex justify-content-between">
+        <Button size="lg" onClick={handleNavToSettings} >
+          <FaHome style={{ fontSize: "1.5rem" }} className="me-2"/>
+          Home
         </Button>
+        <Button size="lg" onClick={handleRestartGame}>
+          <FaRedo style={{ fontSize: "1.5rem" }} className="me-3"/>
+          Play Again
+        </Button>
+      </div>
+    </Container>); 
+  } else { // game stage 
+      return (
+      <Container className="column-container my-3 vw-70" onClick={handleStartGame}>
+        <MessageHeader gameStage={gameStage}/>
+        <Container fluid className="position-relative d-flex align-items-start my-3 p-2" style={{backgroundColor: '#8D81CA'}}>
+          {whiteKeys.map((note) => (
+            <PianoKey
+              key={note}
+              id={note}
+              className="white-key flex-fill mx-1"
+              onPress={handlePressKey}
+              onRelease={handleReleaseKey}
+              isActive={activeNote === note}
+              showLabel={labels}
+            />
+          ))}
 
-        <h3>Score: {score}</h3>
+          {blackKeys.map(({ note, after }) => (
+            <PianoKey
+              key={note}
+              id={note}
+              className="black-key position-absolute"
+              style={{
+                left: `${(after + 1) * whiteKeyWidth}%`,
+                transform: "translateX(-50%)",
+                width: `${whiteKeyWidth * 0.55}%`,
+              }}
+              onPress={handlePressKey}
+              onRelease={handleReleaseKey}
+              isActive={activeNote === note}
+              showLabel={labels}
+            />
+          ))}
+        </Container>
+        <Container className="d-flex justify-content-between align-items-center">
+          <Button onClick={handleNavToSettings} className="text-start px-4" size="lg">
+            Settings
+          </Button>
+          <h3>Score: {score}</h3>
+        </Container>
       </Container>
-    </Container>
-  );
+    );
+
+  }
+
 }

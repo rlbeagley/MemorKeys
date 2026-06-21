@@ -72,10 +72,38 @@ body {
   margin-top: 0.1em;
 }
 
-.piano-key {
+.white-key {
+  background-color: #F7FFEA;
+  aspect-ratio: 125 / 459; 
+}
+.white-key.key-pressed {
+  background-color: #F3E0A5;
+}
 
+.black-key {
+  background-color: #290188;
+  aspect-ratio: 97 / 305;
+}
+
+.white-key, .black-key {
+  position: relative;
+}
+.black-key.key-pressed {
+  background-color: #F3E0A5;
 }
 
 .key-pressed rect {
   fill: #F3E0A5;
 }
+
+.key-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.white-key .key-label { color: #290188; }
+.black-key .key-label { color: #F7FFEA; }

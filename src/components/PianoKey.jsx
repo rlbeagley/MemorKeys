@@ -1,9 +1,10 @@
 import {useState} from 'react';
 
-export default function PianoKey({ Svg, id, className, isActive, onPress, onRelease, ...rest}) {
+export default function PianoKey({id, className, isActive, onPress, onRelease, showLabel, ...rest}) {
 
   return (
-    <Svg
+
+    <div  
       id={id}
       className={`${className ?? ""} ${isActive ? "key-pressed" : ""}`}
       onMouseDown={() =>{ 
@@ -12,7 +13,10 @@ export default function PianoKey({ Svg, id, className, isActive, onPress, onRele
       onMouseUp={() => {
         onRelease(id);
       }}
-      {...rest}
-    />
+      {...rest}> 
+    
+      {showLabel && <h3 className="key-label">{id}</h3>}
+    </div>
+      
   );
 }
