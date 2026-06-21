@@ -19,7 +19,7 @@ export default function Home() {
     }
 
     return (
-        <Container className="column-container">
+        <Container className="column-container vh-100">
             <h4 className="mt-3">Welcome to</h4>
             <h1 className="mb-4">MemorKeys</h1>
             <Form onSubmit={handleSubmit}>
