@@ -1,17 +1,17 @@
 import {useState} from 'react';
 
-export default function PianoKey({ Svg, id, className, ...rest}) {
-  const [pressed, setPressed] = useState(false);
+export default function PianoKey({ Svg, id, className, isActive, onPress, onRelease, ...rest}) {
 
   return (
     <Svg
       id={id}
-      className={`${className ?? ""} ${pressed ? "key-pressed" : ""}`}
+      className={`${className ?? ""} ${isActive ? "key-pressed" : ""}`}
       onMouseDown={() =>{ 
-        setPressed(true); 
         onPress(id);
       }}
-      onMouseUp={() => setPressed(false)}
+      onMouseUp={() => {
+        onRelease(id);
+      }}
       {...rest}
     />
   );
