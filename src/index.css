@@ -66,3 +66,16 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.light-icon {
+  color:#F7FFEA;
+  margin-top: 0.1em;
+}
+
+.piano-key {
+
+}
+
+.key-pressed rect {
+  fill: #F3E0A5;
+}
