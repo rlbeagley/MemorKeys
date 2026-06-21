@@ -229,7 +229,7 @@ export default function Play() {
 
   if (gameStage == 'end') { 
     return(
-    <Container className="d-flex vh-100 flex-column justify-content-center align-items-between">
+    <Container className="d-flex vh-100 flex-column justify-content-center align-items-between vw-75">
       <h1>Game Over</h1>
       <div className="d-flex justify-content-between">
         <h3>Score:</h3>
@@ -252,7 +252,7 @@ export default function Play() {
     </Container>); 
   } else { // game stage 
       return (
-      <Container className="column-container my-3 vw-70" onClick={handleStartGame}>
+      <Container className="column-container my-3 vw-75 vh-100" onClick={handleStartGame}>
         <MessageHeader gameStage={gameStage}/>
         <Container fluid className="position-relative d-flex align-items-start my-3 p-2" style={{backgroundColor: '#8D81CA'}}>
           {whiteKeys.map((note) => (
