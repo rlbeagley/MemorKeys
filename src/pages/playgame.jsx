@@ -99,7 +99,7 @@ export default function Play() {
   "G#": gSharpNote
   };
 
-  const difficultyMultipliers = [10,1,0.2];
+  const difficultyMultipliers = [1,0.5,0.25];
 
 
   const randomGenerateNote = () => {
@@ -124,9 +124,9 @@ export default function Play() {
 
     let difficultyMultiplier = 0;
 
-    if (level == "easy") {
+    if (level == 1) {
       difficultyMultiplier = difficultyMultipliers[0];
-    } else if (level=="normal") {
+    } else if (level==2) {
       difficultyMultiplier = difficultyMultipliers[1];
     } else {
       difficultyMultiplier = difficultyMultipliers[2];
@@ -254,7 +254,7 @@ export default function Play() {
       return (
       <Container className="column-container my-3 vw-75 vh-100" onClick={handleStartGame}>
         <MessageHeader gameStage={gameStage}/>
-        <Container className="position-relative d-flex align-items-start my-3 p-2 vw-75" style={{backgroundColor: '#8D81CA'}}>
+        <Container className="position-relative d-flex align-items-start my-3 mx-5 p-2 vw-75" style={{backgroundColor: '#8D81CA'}}>
           {whiteKeys.map((note) => (
             <PianoKey
               key={note}
