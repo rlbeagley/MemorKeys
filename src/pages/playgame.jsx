@@ -252,7 +252,7 @@ export default function Play() {
     </Container>); 
   } else { // game stage 
       return (
-      <Container className="column-container my-3 vw-75 vh-100" onClick={handleStartGame}>
+      <Container className="column-container my-3 vw-75" onClick={handleStartGame}>
         <MessageHeader gameStage={gameStage}/>
         <Container className="position-relative d-flex align-items-start my-3 mx-5 p-2 vw-75" style={{backgroundColor: '#8D81CA'}}>
           {whiteKeys.map((note) => (
